@@ -22,7 +22,9 @@ exports.getOneSauce = (req, res, next) => {
 
 exports.createSauce = (req, res, next) => {
     const sauceObject = JSON.parse(req.body.sauce);
-    delete sauceObject._id;
+    if (sauceObject.userId !== req.auth.userId) {
+        return res.status(403).json("unauthorized request");
+    } {
     const sauce = new Sauce ({
         ...sauceObject,
         
@@ -36,7 +38,7 @@ exports.createSauce = (req, res, next) => {
         .then(() => res.status(201).json({ message: 'Sauce enregistrée'}))
         .catch(error => res.status(400).json({ error }));
     };
-
+}
 
 //Modifier sauce
 
@@ -105,7 +107,7 @@ exports.sauceLiked = (req, res, next) => {
                     Sauces.updateOne({ _id: id }, objectLikeDislikeSauce )
                         .then(() => res.status(200).json({ message: 'Sauce notée !' }))
                         .catch(error => res.status(400).json({ error }));
-            }
+            };
     }) 
         .catch((error) => res.status(400).json ({ error }));
 }
