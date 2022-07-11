@@ -1,6 +1,6 @@
 const Sauce = require('../models/Sauces');
 const fs = require('fs');
-const { error } = require('console');
+const Sauces = require('../models/Sauces');
 
 //Affichage de toute les sauces
 
@@ -40,11 +40,11 @@ exports.createSauce = (req, res, next) => {
         ...sauceObject,
         
         imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`,
+        likes: 0,
+        dislikes: 0,
+        usersLiked: [],
+        usersDislikes: []
     });
-    if (sauce.heat < 0 || sauce.heat > 10) {
-        sauce.heat = 0;
-        console.log("valeur heat invalide, heat initialisé");
-    }
     sauce.save()
         .then(() => res.status(201).json({ message: 'Sauce enregistrée'}))
         .catch(error => res.status(400).json({ error }));
@@ -80,4 +80,15 @@ exports.deleteSauce = (req, res, next) => {
         .catch(error => res.status(500).json({ error }));
 };
 
+// affiches des likes 
 
+exports.sauceLiked = (req, res, next) => {
+    const user = req.body.userId;
+    const userLike = req.body.like;
+    const id = {
+        _id: req.params.id
+    };
+    Sauce.findOne({_id: id})
+        .then() 
+        .catch((error) => res.status(400).json ({ error }));
+}
