@@ -23,8 +23,9 @@ mongoose.connect(process.env.MONGO_URI,
     .then(() => console.log('Connexion à MongoDB réussie !'))
     .catch(() => console.log('Connexion à MongoDB échouée !'));
 
-
+//Sécurité QWASP
 app.use(helmet());
+app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
 
 //CORS
 app.use((req, res, next) => {

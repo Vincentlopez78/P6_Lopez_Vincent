@@ -1,3 +1,5 @@
+// @ts-nocheck
+// @ts-nocheck
 const Sauce = require('../models/Sauces');
 const fs = require('fs');
 const Sauces = require('../models/Sauces');
@@ -23,8 +25,8 @@ exports.getOneSauce = (req, res, next) => {
 exports.createSauce = (req, res, next) => {
     const sauceObject = JSON.parse(req.body.sauce);
     if (sauceObject.userId !== req.auth.userId) {
-        return res.status(403).json("unauthorized request");
-    } {
+        return res.status(403).json("requête non authorisée");
+    };
     const sauce = new Sauce ({
         ...sauceObject,
         
@@ -38,7 +40,7 @@ exports.createSauce = (req, res, next) => {
         .then(() => res.status(201).json({ message: 'Sauce enregistrée'}))
         .catch(error => res.status(400).json({ error }));
     };
-}
+
 
 //Modifier sauce
 
@@ -72,42 +74,47 @@ exports.deleteSauce = (req, res, next) => {
 // affiches des likes 
 
 exports.sauceLiked = (req, res, next) => {
-    const user = req.body.userId;
-    const userLike = req.body.like;
-    const id = req.params.id;
-    Sauces.findOne({_id: id})
+    const userId = req.body.userId;
+    const like = req.body.like;
+    const sauceId = req.params.id;
+
+    Sauces.findOne({ _id: sauceId })
         .then(sauce => {
-            if(sauce != null) {
-                const objectLikeDislikeSauce = {
+            // Nouvelles valeurs à modifier
+            const newValues = {
                 usersLiked: sauce.usersLiked,
                 usersDisliked: sauce.usersDisliked,
-                }
-                switch(userLike) {
-                    case 1:
-                        objectLikeDislikeSauce.usersLiked.push(user);
-                        break;
-
-                    case -1:
-                        objectLikeDislikeSauce.usersDisliked.push(user);
-                        break;
-
-                    case 0:
-                        if(objectLikeDislikeSauce.includes(user)) {
-                            const index = objectLikeDislikeSauce.usersLiked.indexOf(user);
-                            objectLikeDislikeSauce.splice(index, 1);
-                        } else {
-                            const index = objectLikeDislikeSauce.usersDisliked.indexOf(user);
-                            objectLikeDislikeSauce.splice(index, 1);
-                        }
-                        break;
-                };
-                objectLikeDislikeSauce.likes = objectLikeDislikeSauce.usersLiked.length;
-                objectLikeDislikeSauce.dislikes = objectLikeDislikeSauce.usersDisliked.length;
-                    // Mise à jour de la sauce avec les nouvelles valeurs
-                    Sauces.updateOne({ _id: id }, objectLikeDislikeSauce )
-                        .then(() => res.status(200).json({ message: 'Sauce notée !' }))
-                        .catch(error => res.status(400).json({ error }));
+            }
+            // Différents cas:
+            switch (like) {
+                case 1:  // CAS: sauce liked
+                    newValues.usersLiked.push(userId);
+                    break;
+                case -1:  // CAS: sauce disliked
+                    newValues.usersDisliked.push(userId);
+                    break;
+                case 0:  // CAS: Annulation du like/dislike
+                    if (newValues.usersLiked.includes(userId)) {
+                        // si on annule le like
+                        // IndexOf va chercher la valeur du like
+                        const index = newValues.usersLiked.indexOf(userId);
+                        // Splice va retirer la valeur du like
+                        newValues.usersLiked.splice(index, 1);
+                    } else {
+                        // si on annule le dislike
+                        const index = newValues.usersDisliked.indexOf(userId);
+                        newValues.usersDisliked.splice(index, 1);
+                    }
+                    break;
             };
-    }) 
-        .catch((error) => res.status(400).json ({ error }));
-}
+            // Calcul du nombre de likes / dislikes
+            newValues.likes = newValues.usersLiked.length;
+            console.log(newValues.usersLiked.length);
+            newValues.dislikes = newValues.usersDisliked.length;
+            // Mise à jour de la sauce avec les nouvelles valeurs
+            Sauces.updateOne({ _id: sauceId }, newValues )
+                .then(() => res.status(200).json({ message: 'Sauce notée !' }))
+                .catch(error => res.status(400).json({ error }))  
+        })
+        .catch(error => res.status(500).json({ error }));
+    }
