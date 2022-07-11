@@ -5,7 +5,7 @@ const Sauces = require('../models/Sauces');
 //Affichage de toute les sauces
 
 exports.getAllSauces = (req, res, next) => {
-    Sauce.find()
+    Sauces.find()
         .then((sauces) => res.status(200).json(sauces))
         .catch((error) => res.status(400).json({ error }));
 };
@@ -13,7 +13,7 @@ exports.getAllSauces = (req, res, next) => {
 //Affichage une sauce
 
 exports.getOneSauce = (req, res, next) => {
-    Sauce.findOne({ _id: req.params.id })
+    Sauces.findOne({ _id: req.params.id })
         .then(sauce => res.status(200).json(sauce))
         .catch(error => res.status(404).json({ error }));
 };
@@ -22,20 +22,7 @@ exports.getOneSauce = (req, res, next) => {
 
 exports.createSauce = (req, res, next) => {
     const sauceObject = JSON.parse(req.body.sauce);
-    if (sauceObject.userId !== req.auth.userId) {
-        return res.status(403).json("unauthorized request");
-    } else if (
-        req.file.mimetype === "image/jpeg" ||
-        req.file.mimetype === "image/png" ||
-        req.file.mimetype === "image/jpg" ||
-        req.file.mimetype === "image/bmp" ||
-        req.file.mimetype === "image/gif" ||
-        req.file.mimetype === "image/ico" ||
-        req.file.mimetype === "image/svg" ||
-        req.file.mimetype === "image/tiff" ||
-        req.file.mimetype === "image/tif" ||
-        req.file.mimetype === "image/webp"
-    ) {
+    delete sauceObject._id;
     const sauce = new Sauce ({
         ...sauceObject,
         
@@ -49,7 +36,7 @@ exports.createSauce = (req, res, next) => {
         .then(() => res.status(201).json({ message: 'Sauce enregistrée'}))
         .catch(error => res.status(400).json({ error }));
     };
-}
+
 
 //Modifier sauce
 
@@ -58,7 +45,7 @@ exports.modifySauce = (req, res, next) => {
         ...JSON.parse(req.body.sauce),
         imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
     } : {...req.body};
-    Sauce.updateOne({ _id: req.params.id}, {...sauceObject, _id: req.params.id})
+    Sauces.updateOne({ _id: req.params.id}, {...sauceObject, _id: req.params.id})
         .then(() => res.status(200).json({ message: 'Sauce modifié'}))
         .catch(error => res.status(400).json({ error }));
 }
@@ -66,7 +53,7 @@ exports.modifySauce = (req, res, next) => {
 //Suppression d'une sauce
 
 exports.deleteSauce = (req, res, next) => {
-    Sauce.findOne({ _id: req.params.id })
+    Sauces.findOne({ _id: req.params.id })
         .then(sauce => {
             if(sauce != null) {
                 const filename = sauce.imageUrl.split('/images/')[1];
@@ -85,10 +72,40 @@ exports.deleteSauce = (req, res, next) => {
 exports.sauceLiked = (req, res, next) => {
     const user = req.body.userId;
     const userLike = req.body.like;
-    const id = {
-        _id: req.params.id
-    };
-    Sauce.findOne({_id: id})
-        .then() 
+    const id = req.params.id;
+    Sauces.findOne({_id: id})
+        .then(sauce => {
+            if(sauce != null) {
+                const objectLikeDislikeSauce = {
+                usersLiked: sauce.usersLiked,
+                usersDisliked: sauce.usersDisliked,
+                }
+                switch(userLike) {
+                    case 1:
+                        objectLikeDislikeSauce.usersLiked.push(user);
+                        break;
+
+                    case -1:
+                        objectLikeDislikeSauce.usersDisliked.push(user);
+                        break;
+
+                    case 0:
+                        if(objectLikeDislikeSauce.includes(user)) {
+                            const index = objectLikeDislikeSauce.usersLiked.indexOf(user);
+                            objectLikeDislikeSauce.splice(index, 1);
+                        } else {
+                            const index = objectLikeDislikeSauce.usersDisliked.indexOf(user);
+                            objectLikeDislikeSauce.splice(index, 1);
+                        }
+                        break;
+                };
+                objectLikeDislikeSauce.likes = objectLikeDislikeSauce.usersLiked.length;
+                objectLikeDislikeSauce.dislikes = objectLikeDislikeSauce.usersDisliked.length;
+                    // Mise à jour de la sauce avec les nouvelles valeurs
+                    Sauces.updateOne({ _id: id }, objectLikeDislikeSauce )
+                        .then(() => res.status(200).json({ message: 'Sauce notée !' }))
+                        .catch(error => res.status(400).json({ error }));
+            }
+    }) 
         .catch((error) => res.status(400).json ({ error }));
 }
