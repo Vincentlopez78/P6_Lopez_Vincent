@@ -29,7 +29,6 @@ exports.createSauce = (req, res, next) => {
     };
     const sauce = new Sauce ({
         ...sauceObject,
-        
         imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`,
         likes: 0,
         dislikes: 0,
@@ -81,38 +80,38 @@ exports.sauceLiked = (req, res, next) => {
     Sauces.findOne({ _id: sauceId })
         .then(sauce => {
             // Nouvelles valeurs à modifier
-            const newValues = {
+            const likeSauce = {
                 usersLiked: sauce.usersLiked,
                 usersDisliked: sauce.usersDisliked,
             }
             // Différents cas:
             switch (like) {
                 case 1:  // CAS: sauce liked
-                    newValues.usersLiked.push(userId);
+                    likeSauce.usersLiked.push(userId);
                     break;
                 case -1:  // CAS: sauce disliked
-                    newValues.usersDisliked.push(userId);
+                    likeSauce.usersDisliked.push(userId);
                     break;
                 case 0:  // CAS: Annulation du like/dislike
-                    if (newValues.usersLiked.includes(userId)) {
+                    if (likeSauce.usersLiked.includes(userId)) {
                         // si on annule le like
                         // IndexOf va chercher la valeur du like
-                        const index = newValues.usersLiked.indexOf(userId);
+                        const index = likeSauce.usersLiked.indexOf(userId);
                         // Splice va retirer la valeur du like
-                        newValues.usersLiked.splice(index, 1);
+                        likeSauce.usersLiked.splice(index, 1);
                     } else {
                         // si on annule le dislike
-                        const index = newValues.usersDisliked.indexOf(userId);
-                        newValues.usersDisliked.splice(index, 1);
+                        const index = likeSauce.usersDisliked.indexOf(userId);
+                        likeSauce.usersDisliked.splice(index, 1);
                     }
                     break;
             };
             // Calcul du nombre de likes / dislikes
-            newValues.likes = newValues.usersLiked.length;
-            console.log(newValues.usersLiked.length);
-            newValues.dislikes = newValues.usersDisliked.length;
+            likeSauce.likes = likeSauce.usersLiked.length;
+            console.log(likeSauce.usersLiked.length);
+            likeSauce.dislikes = likeSauce.usersDisliked.length;
             // Mise à jour de la sauce avec les nouvelles valeurs
-            Sauces.updateOne({ _id: sauceId }, newValues )
+            Sauces.updateOne({ _id: sauceId }, likeSauce )
                 .then(() => res.status(200).json({ message: 'Sauce notée !' }))
                 .catch(error => res.status(400).json({ error }))  
         })
