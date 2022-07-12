@@ -1,9 +1,8 @@
+
 const rateLimit = require('express-rate-limit');
 
-const limiter = rateLimit({
-    windowMs: 10 * 60 * 1000,
+exports.connexionLimiter = rateLimit({
+    windowMS: 10 * 60 * 1000,
     max: 5,
-    message: 'Compte bloqué, revenez dans 10 minutes'
+    message: 'Vous avez essayer de vous connecter trop de fois, veuillez reessayer plus tard.'
 });
-
-module.exports = limiter;

@@ -31,6 +31,7 @@
     "path": "^0.12.7"
   },
   "devDependencies": {
+    "@types/helmet": "^4.0.0",
     "run-script-os": "^1.1.6"
   }
 }

@@ -79,28 +79,27 @@ exports.sauceLiked = (req, res, next) => {
 
     Sauces.findOne({ _id: sauceId })
         .then(sauce => {
-            // Nouvelles valeurs à modifier
+            //On 
             const likeSauce = {
                 usersLiked: sauce.usersLiked,
                 usersDisliked: sauce.usersDisliked,
             }
             // Différents cas:
             switch (like) {
-                case 1:  // CAS: sauce liked
+                case 1:  //Si on aime, on push dans le tableau usersLiked
                     likeSauce.usersLiked.push(userId);
                     break;
-                case -1:  // CAS: sauce disliked
+                case -1:  //Si on aime pas, on push dans le tableau usersDisliked
                     likeSauce.usersDisliked.push(userId);
                     break;
-                case 0:  // CAS: Annulation du like/dislike
+                case 0:  //Pour retirer le like/dislike
                     if (likeSauce.usersLiked.includes(userId)) {
-                        // si on annule le like
-                        // IndexOf va chercher la valeur du like
+                        //Quand on annule le like, on récupère l'userId
                         const index = likeSauce.usersLiked.indexOf(userId);
-                        // Splice va retirer la valeur du like
+                        //Et on modifie dans le tableau pour le retirer
                         likeSauce.usersLiked.splice(index, 1);
                     } else {
-                        // si on annule le dislike
+                        //Même chose pour le dislike
                         const index = likeSauce.usersDisliked.indexOf(userId);
                         likeSauce.usersDisliked.splice(index, 1);
                     }
@@ -110,7 +109,7 @@ exports.sauceLiked = (req, res, next) => {
             likeSauce.likes = likeSauce.usersLiked.length;
             console.log(likeSauce.usersLiked.length);
             likeSauce.dislikes = likeSauce.usersDisliked.length;
-            // Mise à jour de la sauce avec les nouvelles valeurs
+            // Mise à jour des nouvelles valeurs
             Sauces.updateOne({ _id: sauceId }, likeSauce )
                 .then(() => res.status(200).json({ message: 'Sauce notée !' }))
                 .catch(error => res.status(400).json({ error }))  
