@@ -109,10 +109,11 @@ exports.sauceLiked = (req, res, next) => {
             likeSauce.likes = likeSauce.usersLiked.length;
             console.log(likeSauce.usersLiked.length);
             likeSauce.dislikes = likeSauce.usersDisliked.length;
+            console.log(likeSauce.usersDisliked.length);
             // Mise à jour des nouvelles valeurs
             Sauces.updateOne({ _id: sauceId }, likeSauce )
                 .then(() => res.status(200).json({ message: 'Sauce notée !' }))
                 .catch(error => res.status(400).json({ error }))  
         })
         .catch(error => res.status(500).json({ error }));
-    }
+    } 

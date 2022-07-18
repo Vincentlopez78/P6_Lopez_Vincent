@@ -1,27 +1,35 @@
 # HotTakes
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 13.2.4.
+Pour ce projet il vous faut installer node.js sur votre ordinateur.
 
-## Development server
+## Backend
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+Au lancement du dossier, dans le Terminal, entré dans le dossier 'backend' (cd backend) puis taper 'npm install'.
+Une fois installé veuillez télécharger les modules suivant :
+    
+    -'Express' (npm install express --save)
+    -'express-rate-limit' (npm install express-rate-limit -- save)
+    -'Mongoose' (npm install mongoose --save)
+    -'dotenv' (npm install dotenv --save)
+    -'helmet' (npm install helmet --save)
+    -'jsonwebtoken' (npm install jsonwebtoken --save)
+    -'body-parser' (npm install body-parser --save)
+    -'path' (npm install path --save)
+    -'multer' (npm install multer --save)
+    -'fs' (npm install fs --save)
+    -'bcrypt' (npm install bcrypt --save)
+    -'mongoose-unique-validator' (npm install mongoose-unique-validator --save)
 
-## Code scaffolding
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+Quand tout est installé tapez : npm run dev.
 
-## Build
+Et voilà le serveur est lancé !!!
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+## Frontend 
 
-## Running unit tests
+Dans un autre terminal placez vous dans le dossier Web-Developer-P6 ('cd ..' si vous êtes dans le dossier backend) 
+et entré dans le dossier frontend (cd frontend).
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+Dans le même terminal taper la commande : ng serve
 
-## Running end-to-end tests
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
