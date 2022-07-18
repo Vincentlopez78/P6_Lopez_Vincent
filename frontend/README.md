@@ -19,6 +19,9 @@ Une fois installé veuillez télécharger les modules suivant :
     -'fs' (npm install fs --save)
     -'bcrypt' (npm install bcrypt --save)
     -'mongoose-unique-validator' (npm install mongoose-unique-validator --save)
+    -'express-mongo-sanitize' (npm express-mongo-sanitize --save)
+    -'password-validator' (npm install password-validator --save)
+    -'email-validator' (npm install email-validator --save)
 
 
 Quand tout est installé tapez : npm run dev.

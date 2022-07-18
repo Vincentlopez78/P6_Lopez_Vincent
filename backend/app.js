@@ -4,6 +4,7 @@ const helmet = require('helmet');
 const app = express();
 
 const mongoose = require('mongoose');
+const mongoSanitize = require('express-mongo-sanitize');
 
 require("dotenv").config()
 
@@ -26,8 +27,11 @@ mongoose.connect(process.env.MONGO_URI,
 
 //Sécurité QWASP
 // @ts-ignore
+// configuration des en-têtes HTTP
 app.use(helmet());
 app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
+// controle des entrées avec '$' et '.' dans mongo
+app.use(mongoSanitize());
 
 //CORS
 app.use((req, res, next) => {
