@@ -18,8 +18,8 @@ userPasswordSchema
 
 exports.signup = (req, res, next) => {
     if (!emailValidator.validate(req.body.email) || !userPasswordSchema.validate(req.body.password)) {
-        return res.status(400).json({message: 'Votre mot de passe doit contenir minimum 8 caractère, 1 majuscule et 2 chiffres et/ou vérifiez le format de votre email.'})
-    } else if (emailValidator.validate(req.body.email) || userPasswordSchema.validate(req.body.password)) {
+        return res.status(400).json({message: 'Votre mot de passe doit contenir minimum 8 caractères, 1 majuscule et 2 chiffres et/ou vérifiez le format de votre email.'})
+    } else {
         bcrypt.hash(req.body.password, 10)
             .then(hash => {
                 const user = new User({
@@ -38,12 +38,12 @@ exports.login = (req, res, next) => {
     User.findOne({ email: req.body.email })
         .then(user => {
             if(!user) {
-                return res.status(401).json({ message: 'Mot de passe et/ou identifiant incorrect' });
+                return res.status(401).json({message:'utilisateur non trouvé'});
             } else {
                 bcrypt.compare(req.body.password, user.password)
                 .then(valid => {
                     if(!valid) {
-                        return res.status(401).json({ message: 'Mot de passe et/ou identifiant incorrect' })
+                        return res.status(401).json({message:'mot de passe non trouvé'});
                     } else {
                         res.status(200).json({
                             userId: user._id,
