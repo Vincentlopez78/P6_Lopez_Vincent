@@ -1,16 +1,16 @@
-import express from 'express';
-import helmet from 'helmet';
+const express = require('express');
+const helmet = require('helmet');
 
 const app = express();
 
-import mongoose from 'mongoose';
-import mongoSanitize from 'express-mongo-sanitize';
+const mongoose = require('mongoose');
+const mongoSanitize = require('express-mongo-sanitize');
 
 require("dotenv").config()
 
-import bodyParser from 'body-parser';
+const bodyParser = require('body-parser');
 
-import path from 'path';
+const path = require('path');
 
 
 const userRoutes = require('./routes/user');
@@ -27,6 +27,7 @@ mongoose.connect(process.env.MONGO_URI,
 
 //Sécurité QWASP
 // configuration des en-têtes HTTP
+// @ts-ignore
 app.use(helmet());
 app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
 // controle des entrées avec '$' et '.' dans mongo
