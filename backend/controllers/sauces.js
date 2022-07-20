@@ -1,27 +1,29 @@
-// @ts-nocheck
-// @ts-nocheck
+
 const Sauce = require('../models/Sauces');
 const fs = require('fs');
-const Sauces = require('../models/Sauces');
+
 
 //Affichage de toute les sauces
 
+// @ts-ignore
 exports.getAllSauces = (req, res, next) => {
-    Sauces.find()
+    Sauce.find()
         .then((sauces) => res.status(200).json(sauces))
         .catch((error) => res.status(400).json({ error }));
 };
 
 //Affichage une sauce
 
+// @ts-ignore
 exports.getOneSauce = (req, res, next) => {
-    Sauces.findOne({ _id: req.params.id })
+    Sauce.findOne({ _id: req.params.id })
         .then(sauce => res.status(200).json(sauce))
         .catch(error => res.status(404).json({ error }));
 };
 
 // Création des sauces
 
+// @ts-ignore
 exports.createSauce = (req, res, next) => {
     const sauceObject = JSON.parse(req.body.sauce);
     if (sauceObject.userId !== req.auth.userId) {
@@ -43,20 +45,22 @@ exports.createSauce = (req, res, next) => {
 
 //Modifier sauce
 
+// @ts-ignore
 exports.modifySauce = (req, res, next) => {
     const sauceObject = req.file ? {
         ...JSON.parse(req.body.sauce),
         imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
     } : {...req.body};
-    Sauces.updateOne({ _id: req.params.id}, {...sauceObject, _id: req.params.id})
+    Sauce.updateOne({ _id: req.params.id}, {...sauceObject, _id: req.params.id})
         .then(() => res.status(200).json({ message: 'Sauce modifié'}))
         .catch(error => res.status(400).json({ error }));
 }
 
 //Suppression d'une sauce
 
+// @ts-ignore
 exports.deleteSauce = (req, res, next) => {
-    Sauces.findOne({ _id: req.params.id })
+    Sauce.findOne({ _id: req.params.id })
         .then(sauce => {
             if(sauce != null) {
                 const filename = sauce.imageUrl.split('/images/')[1];
@@ -72,16 +76,19 @@ exports.deleteSauce = (req, res, next) => {
 
 // affiches des likes 
 
+// @ts-ignore
 exports.sauceLiked = (req, res, next) => {
     const userId = req.body.userId;
     const like = req.body.like;
     const sauceId = req.params.id;
 
-    Sauces.findOne({ _id: sauceId })
+    Sauce.findOne({ _id: sauceId })
         .then(sauce => {
-            //On 
+            //On crée notre objet
             const likeSauce = {
+                // @ts-ignore
                 usersLiked: sauce.usersLiked,
+                // @ts-ignore
                 usersDisliked: sauce.usersDisliked,
             }
             // Différents cas:
@@ -111,7 +118,7 @@ exports.sauceLiked = (req, res, next) => {
             likeSauce.dislikes = likeSauce.usersDisliked.length;
             console.log(likeSauce.usersDisliked.length);
             // Mise à jour des nouvelles valeurs
-            Sauces.updateOne({ _id: sauceId }, likeSauce )
+            Sauce.updateOne({ _id: sauceId }, likeSauce )
                 .then(() => res.status(200).json({ message: 'Sauce notée !' }))
                 .catch(error => res.status(400).json({ error }))  
         })

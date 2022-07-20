@@ -1,16 +1,16 @@
+import express from 'express';
+import helmet from 'helmet';
 
-const express = require('express');
-const helmet = require('helmet');
 const app = express();
 
-const mongoose = require('mongoose');
-const mongoSanitize = require('express-mongo-sanitize');
+import mongoose from 'mongoose';
+import mongoSanitize from 'express-mongo-sanitize';
 
 require("dotenv").config()
 
-const bodyParser = require('body-parser');
+import bodyParser from 'body-parser';
 
-const path = require('path');
+import path from 'path';
 
 
 const userRoutes = require('./routes/user');
@@ -26,7 +26,6 @@ mongoose.connect(process.env.MONGO_URI,
     .catch(() => console.log('Connexion à MongoDB échouée !'));
 
 //Sécurité QWASP
-// @ts-ignore
 // configuration des en-têtes HTTP
 app.use(helmet());
 app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
@@ -47,7 +46,7 @@ app.use(bodyParser.json());
 //Affichage des images
 app.use("/images", express.static(path.join(__dirname,'images')));
 
-
+//Routes
 app.use('/api/auth', userRoutes);
 app.use('/api/sauces', sauceRoutes);
 
